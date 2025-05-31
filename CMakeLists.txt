@@ -1,0 +1,98 @@
+cmake_minimum_required(VERSION 3.8)
+project(state_saver)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(vision_msgs REQUIRED)
+find_package(cv_bridge REQUIRED)
+find_package(image_transport REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tools_nav REQUIRED)
+find_package(interfaces REQUIRED)
+find_package(common REQUIRED)
+find_package(yaml-cpp REQUIRED)
+
+include_directories(HEADERS_EXECUTABLE
+    ${YAML_INCLUDE_DIRS}
+)
+
+add_executable(state_saver src/state_saver.cpp)
+add_executable(logger src/logger.cpp)
+
+ament_target_dependencies(state_saver 
+visualization_msgs
+sensor_msgs
+nav_msgs
+vision_msgs
+rclcpp
+std_msgs
+geometry_msgs
+tf2
+tf2_ros
+tf2_geometry_msgs
+tools_nav
+interfaces
+cv_bridge image_transport OpenCV
+common)
+
+ament_target_dependencies(logger 
+visualization_msgs
+sensor_msgs
+nav_msgs
+vision_msgs
+rclcpp
+std_msgs
+geometry_msgs
+tf2
+tf2_ros
+tf2_geometry_msgs
+tools_nav
+interfaces
+cv_bridge image_transport OpenCV
+common)
+
+target_link_libraries(state_saver
+    yaml-cpp
+)
+target_link_libraries(logger
+    yaml-cpp
+)
+
+target_include_directories(state_saver PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+target_compile_features(state_saver PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+
+target_include_directories(logger PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+target_compile_features(logger PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+
+install(TARGETS
+state_saver
+logger
+  DESTINATION lib/${PROJECT_NAME})
+
+# if(BUILD_TESTING)
+#   find_package(ament_cmake_gtest REQUIRED)
+#   ament_add_gtest(${PROJECT_NAME}_test test/search_target.cpp)
+#   target_include_directories(${PROJECT_NAME}_test PUBLIC
+#     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#     $<INSTALL_INTERFACE:include>
+#   )
+#   target_link_libraries(${PROJECT_NAME}_test name_of_local_library)
+# endif()
+
+ament_package()
